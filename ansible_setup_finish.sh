@@ -8,18 +8,19 @@ EOT
 ### Collecting Required Params ###
 read -p "Enter AWS profile [default]: " aws_profile
 aws_profile=${aws_profile:-default}
-read -p "Enter name of Infra Keypair: " infra_keypair_name
-read -p "Enter name of GitHub User: " github_name
-read -p "Enter name of GitHub Mail: " github_mail
-read -p "Enter name of GitHub SSH key: " github_key_name
-
-### Disable host key checking for SSH connections ###
-ssh_options="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+read -p "Enter name of Infra Keypair [rcss_util]: " infra_keypair_name
+infra_keypair_name=${infra_keypair_name:-rcss_util}
+read -p "Enter name of GitHub User [pavel-rcss]: " github_name
+github_name=${github_name:-pavel-rcss}
+read -p "Enter name of GitHub Mail [pavel@rcss.co.il]: " github_mail
+github_mail=${github_mail:-pavel@rcss.co.il}
+read -p "Enter name of GitHub SSH key [gh_jenkins]: " github_key_name
+github_key_name=${github_key_name:-gh_jenkins}
 
 ### Finish Ansible Config ###
-sudo ansible-config init --disabled > ansible.cfg
-sudo sed -i 's/^\(;enable_plugins=.*\)/\1, aws_ec2/' ansible.cfg
-sudo mv ansible.cfg /etc/ansible/
+sudo ansible-config init --disabled > ~/ansible.cfg
+sudo sed -i 's/^\(;enable_plugins=.*\)/\1, aws_ec2/' ~/ansible.cfg
+sudo mv ~/ansible.cfg /etc/ansible/
 
 ### Set required SSH Keys ###
 infra_keypair_value=$(aws secretsmanager get-secret-value --secret-id "${infra_keypair_name}-private" --query 'SecretString' --output text --profile "${aws_profile}")
